@@ -1,91 +1,98 @@
-from datetime import datetime
-import websocket
-import globals as g
-import pandas as pd
-from prophet import Prophet
 import os
 import time
+from datetime import datetime
+import pandas as pd
+import websocket
+
+from prophet import Prophet
+
+from PySide6.QtCore import QRunnable
+
+from globals import Globals
 
 analyser_name = 'Profecy'
 analyser_version = 'REV5 (22/JAN/2023)'
-analyser_coder = 'Michael Leocádio'	
+analyser_coder = 'Michael Leocádio'
 
 loopback = 5
 
-def analyse():
-	# Retrieve starting from oldest candle and excluding latest (not done) one.
+class Analyser(QRunnable):
 
-	while True:
-		if g.instrumentAllowed:
-			microTime = int(datetime.now().strftime('%S'))
-			if microTime == 0:
-				try:
-					instrumentCandles = g.iqoapi.get_candles(g.INSTRUMENTS[g.PAIR]['ID'], g.timeframe, loopback + 1, time.time())
-					g.lastPrice = instrumentCandles[loopback - 1]['close']
-					
-					# Begin of analysis
-					###################
-					src = {'ds':[], 'y':[]}
-					i = 0
-					while i < (loopback - 1):
-						src['ds'].append(pd.to_datetime(instrumentCandles[i]['to'], unit='s'))
-						src['y'].append(instrumentCandles[i]['close'])
-						i += 1
+    def run(self):
+        # Retrieve starting from oldest candle and excluding latest (not done) one.
 
-					# Prophet
-					df = pd.DataFrame(src)
-					if g.yhat is not None:
-						g.pf = Prophet()
-					g.pf.fit(df)
-					future = g.pf.make_future_dataframe(periods=1)
-					g.forecast = g.pf.predict(future)
-					g.predictionPrice = g.forecast['yhat'][0]
+        while True:
+            if Globals.instrumentAllowed:
+                microTime = int(datetime.now().strftime('%S'))
+                if microTime == 0:
+                    try:
+                        instrumentCandles = Globals.iqoapi.get_candles(Globals.INSTRUMENTS[Globals.PAIR]['ID'], Globals.timeframe, loopback + 1,
+                                                                 time.time())
+                        Globals.lastPrice = instrumentCandles[loopback - 1]['close']
 
-					# Assimilation
-					if g.price[0] == None:
-						g.price[0] = g.lastPrice
-						g.price[1] = g.price[0]
-						g.yhat[0] = g.predictionPrice
-						g.yhat[1] = g.yhat[0]
-					else:
-						g.price[1] = g.price[0]
-						g.price[0] = g.lastPrice
-						g.yhat[1] = g.yhat[0]
-						g.yhat[0] = g.predictionPrice
+                        # Begin of analysis
+                        ###################
+                        src = {'ds': [], 'y': []}
+                        i = 0
+                        while i < (loopback - 1):
+                            src['ds'].append(pd.to_datetime(instrumentCandles[i]['to'], unit='s'))
+                            src['y'].append(instrumentCandles[i]['close'])
+                            i += 1
 
-						# Crossover Logic
-						g.isBearishChange = g.price[1] > g.yhat[1] and g.price[0] < g.yhat[0]
-						g.isBullishChange = g.price[1] < g.yhat[1] and g.price[0] > g.yhat[0]
+                        # Prophet
+                        df = pd.DataFrame(src)
+                        if Globals.yhat is not None:
+                            Globals.pf = Prophet()
+                        Globals.pf.fit(df)
+                        future = Globals.pf.make_future_dataframe(periods=1)
+                        Globals.forecast = Globals.pf.predict(future)
+                        Globals.predictionPrice = Globals.forecast['yhat'][0]
 
-					# Trend
-					g.isBearish = g.yhat[0] > g.price[0]
-					g.isBullish = g.yhat[0] < g.price[0]
+                        # Assimilation
+                        if Globals.price[0] == None:
+                            Globals.price[0] = Globals.lastPrice
+                            Globals.price[1] = Globals.price[0]
+                            Globals.yhat[0] = Globals.predictionPrice
+                            Globals.yhat[1] = Globals.yhat[0]
+                        else:
+                            Globals.price[1] = Globals.price[0]
+                            Globals.price[0] = Globals.lastPrice
+                            Globals.yhat[1] = Globals.yhat[0]
+                            Globals.yhat[0] = Globals.predictionPrice
 
-					# Signals
-					if g.isBullishChange:
-						g.currentSignal = 'buy'
-						b = 500
-						while b <= 5000:
-							if os.name == 'posix':
-								os.system('beep -f ' + str(b) + ' -l 50')
-							b += 500
-					if g.isBearishChange:
-						g.currentSignal = 'sell'
-						b = 5000
-						while b >= 500:
-							if os.name == 'posix':
-								os.system('beep -f ' + str(b) + ' -l 50')
-							b -= 500
+                            # Crossover Logic
+                            Globals.isBearishChange = Globals.price[1] > Globals.yhat[1] and Globals.price[0] < Globals.yhat[0]
+                            Globals.isBullishChange = Globals.price[1] < Globals.yhat[1] and Globals.price[0] > Globals.yhat[0]
 
-					#################
-					# End of analysis
+                        # Trend
+                        Globals.isBearish = Globals.yhat[0] > Globals.price[0]
+                        Globals.isBullish = Globals.yhat[0] < Globals.price[0]
 
-					time.sleep(g.timeframe - 30)
-					continue # In order to be timeframe agnostic we must cycle each analysis according to given seconds per bar.
+                        # Signals
+                        if Globals.isBullishChange:
+                            Globals.currentSignal = 'buy'
+                            b = 500
+                            while b <= 5000:
+                                if os.name == 'posix':
+                                    os.system('beep -f ' + str(b) + ' -l 50')
+                                b += 500
+                        if Globals.isBearishChange:
+                            Globals.currentSignal = 'sell'
+                            b = 5000
+                            while b >= 500:
+                                if os.name == 'posix':
+                                    os.system('beep -f ' + str(b) + ' -l 50')
+                                b -= 500
 
-				except (IndexError, TypeError, websocket.WebSocketException) as e:
-					g.isConnected =  False
-				#except:
-				#	pass
-				
-		time.sleep(g.HIGH_PRIORITY_MS)
+                        #################
+                        # End of analysis
+
+                        time.sleep(Globals.timeframe - 30)
+                        continue  # In order to be timeframe agnostic we must cycle each analysis according to given seconds per bar.
+
+                    except (IndexError, TypeError, websocket.WebSocketException) as e:
+                        Globals.isConnected = False
+            # except:
+            #	pass
+
+            time.sleep(Globals.HIGH_PRIORITY_MS)

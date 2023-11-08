@@ -1,36 +1,45 @@
-from termcolor import colored
-import os
 import json
-import websocket
+import os
 import time
-import globals as g
+import websocket
+from termcolor import colored
 
-def connect():
-	while not g.is_connected:
-		os.system(g.clsstr)
-		print('Connecting...', end=' ')
-		try:
-			g.iqoapi.connect()
-			print(colored('OK', 'green'))
-			g.is_connected = True
-			b = 2000
-			while b <= 10000:
-				if os.name == 'posix':
-					os.system('beep -f ' + str(b) + ' -l 100')
-				b += 2000
-		except (json.JSONDecodeError, websocket.WebSocketException, AttributeError) as e:
-			print(colored('Connection Error, Retry', 'red'))
-			time.sleep(3)
-		except:
-			print(colored('Unknown Error, Abort', 'red'))
-			exit()
+from PySide6.QtCore import QRunnable
 
-def connection():
-	while True:
-		try:
-			g.is_connected = g.iqoapi.check_connect()
-			if not g.is_connected:
-				g.iqoapi.connect()
-		except:
-			continue
-		time.sleep(g.LOW_PRIORITY_MS)
+from globals import Globals
+
+class Connection(QRunnable):
+    
+	@staticmethod
+	def connect():
+		while not Globals.is_connected:
+			os.system(Globals.clsstr)
+			print('ConnectinGlobals...', end=' ')
+			try:
+				Globals.iqoapi.connect()
+				print(colored('OK', 'green'))
+				Globals.is_connected = True
+				b = 2000
+				while b <= 10000:
+					if os.name == 'posix':
+						os.system('beep -f ' + str(b) + ' -l 100')
+					b += 2000
+			except (json.JSONDecodeError, websocket.WebSocketException, AttributeError) as e:
+				print(colored('Connection Error, Retry', 'red'))
+				print(e.msg)
+				time.sleep(3)
+			except (Exception) as e:
+				print(colored('Unknown Error, Abort', 'red'))
+				print(e.msg)
+				exit()
+
+
+	def run(self):
+		while True:
+			try:
+				Globals.is_connected = Globals.iqoapi.check_connect()
+				if not Globals.is_connected:
+					Globals.iqoapi.connect()
+			except:
+				continue
+			time.sleep(Globals.LOW_PRIORITY_MS)

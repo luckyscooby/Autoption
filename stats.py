@@ -1,12 +1,22 @@
 import time
 
-from PySide6.QtCore import QRunnable
+from PySide6.QtCore import QThread
 
 from globals import Globals
 
-class Statistics(QRunnable):
+class Statistics(QThread):
+
+    def __init__(self):
+        super().__init__()
+        self.setObjectName("Statistics Thread")
 
     def run(self):
+        try:
+            Globals.iqoapi.change_balance(Globals.balanceType)
+            Globals.iqoapi.reset_practice_balance()
+        except:
+            pass
+
         while True:
             if Globals.totalWin > 0: Globals.assertivityScore = round((Globals.totalWin / (Globals.totalWin + Globals.totalLoss)) * 100, 2)
             if Globals.assertivityScore > Globals.assertHigh: Globals.assertHigh = Globals.assertivityScore
@@ -14,18 +24,9 @@ class Statistics(QRunnable):
             if Globals.assertivityScore < Globals.assertLow: Globals.assertLow = Globals.assertivityScore
             if Globals.sessionBalanceStatus > Globals.sessionBalanceHigh: Globals.sessionBalanceHigh = Globals.sessionBalanceStatus
             if Globals.sessionBalanceStatus < Globals.sessionBalanceLow: Globals.sessionBalanceLow = Globals.sessionBalanceStatus
-            Globals.accountBalance = self._M_AccountBalance()
+            if Globals.is_connected:
+                try:
+                    Globals.accountBalance = float(round(Globals.iqoapi.get_balance(), 2))
+                except:
+                    pass
             time.sleep(Globals.LOW_PRIORITY_MS)
-
-    @staticmethod
-    def _M_AccountBalance():
-        simulatedAmount = 100
-        isSimulated = True
-        try:
-            b = round(Globals.iqoapi.get_balance(), 2)
-            if isSimulated:
-                return float(b - (10000 - simulatedAmount))
-            else:
-                return float(round(Globals.iqoapi.get_balance(), 2))
-        except:
-            return 1

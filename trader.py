@@ -1,10 +1,14 @@
 import time
 
-from PySide6.QtCore import QRunnable
+from PySide6.QtCore import QThread
 
 from globals import Globals
 
-class Trader(QRunnable):
+class Trader(QThread):
+
+    def __init__(self):
+        super().__init__()
+        self.setObjectName("Trader Thread")
 
     def run(self):
         tradeData = []

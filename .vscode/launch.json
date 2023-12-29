@@ -8,7 +8,7 @@
       "name": "Autoption",
       "type": "python",
       "request": "launch",
-      "program": "controller.py",
+      "program": "autoption.py",
       "console": "integratedTerminal",
       "justMyCode": true
     }

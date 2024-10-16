@@ -37,6 +37,7 @@ class Conditioner(QThread):
 
             if not Globals.is_connected:
                 Globals.instrumentAllowed = False
+                Globals.conditionerReason = "Not connected"
                 continue
 
             microTime = int(datetime.now().strftime('%S'))
@@ -48,6 +49,7 @@ class Conditioner(QThread):
                 sessionTime = int(datetime.now(tz=timezone.utc).strftime('%H'))
                 if not (sessionTime >= 13) and (sessionTime < 17):
                     Globals.instrumentAllowed = False
+                    Globals.conditionerReason = "Out of session"
                     continue
 
                 try:
@@ -55,15 +57,18 @@ class Conditioner(QThread):
                     availableAssets = Globals.iqoapi.get_binary_option_detail()
                     if not availableAssets['EURUSD']['turbo']['enabled'] or availableAssets['EURUSD']['turbo']['is_suspended']:
                         Globals.instrumentAllowed = False
+                        Globals.conditionerReason = "Instrument unavailable"
                         continue
                     
-                    # Check the current profit percentage; I do not trade with profits below 85% since it affects martingale levels.
+                    # Check the current profit percentage; I do not trade with profits below 84% since it affects martingale levels.
                     availableProfit = Globals.iqoapi.get_all_profit()
-                    if not availableProfit['EURUSD']['turbo'] >= 0.85:
+                    if not availableProfit['EURUSD']['turbo'] >= 0.84:
                         Globals.instrumentAllowed = False
+                        Globals.conditionerReason = "Profit not optimal"
                         continue
 
                     Globals.instrumentAllowed = True
 
                 except:
                     Globals.instrumentAllowed = False
+                    Globals.conditionerReason = "Unknown expection"

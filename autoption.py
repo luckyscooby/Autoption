@@ -19,6 +19,8 @@ from stats import Statistics
 import pandas as pd
 import numpy as np
 
+threading.current_thread().setName("Autoption MainThread")
+
 #logging.getLogger().setLevel(level=logging.DEBUG)
 #logging.setLevel(logging.INFO)
 logging.disable(level=logging.CRITICAL)
@@ -32,8 +34,9 @@ Connection.connect()
 Globals.unix_start_time = time.time()
 Globals.start_time = datetime.now().strftime("%Y-%m-%d %I:%M:%S %p") + ' (' + time.localtime().tm_zone + ')'
 
-
-#instrumentCandles = Globals.iqoapi.get_candles(ACTIVES='EURUSD', Globals.timeframe, 20 + 1, time.time())
+###
+#Globals.ongoingTrade, Globals.tradeData = Globals.iqoapi.buy(Globals.entryAmount, "EURUSD", "put", 1)
+###
 
 # LAUNCH MAIN THREADS
 try:

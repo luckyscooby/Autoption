@@ -25,7 +25,7 @@ from datetime import datetime
 import pandas as pd
 import websocket
 
-from prophet import Prophet
+#from prophet import Prophet
 
 from PySide6.QtCore import QThread
 
@@ -54,6 +54,7 @@ class Analyser(QThread):
                         Globals.lastCandleClose = instrumentCandles[period]['close']
 
                         # Calculate WMA(20)
+                        # Formula based on IQOption's own MathML: https://quadcode-tech.github.io/quadcodescript-docs/api/averages/wma.html
                         series = []
                         i = 0
                         while i < (period):
@@ -67,14 +68,16 @@ class Analyser(QThread):
                         Globals.wma20 = wma_sum_numerator / wma_sum_denominator
 
                         # Trend & Crossover Signal
-                        if Globals.wma20 > Globals.lastCandleClose:
-                            if (Globals.isBearish or Globals.isBullish) is not False:
-                                    if Globals.isBullish:
-                                        Globals.currentSignal = 'sell'
-                        elif Globals.wma20 < Globals.lastCandleClose:
-                            if (Globals.isBearish or Globals.isBullish) is not False:
-                                    if Globals.isBearish:
-                                        Globals.currentSignal = 'buy'
+                        #TODO: Implement crossover confirmation by using the next candle close;
+                        if not Globals.ongoingTrade:
+                            if Globals.wma20 > Globals.lastCandleClose:
+                                if (Globals.isBearish or Globals.isBullish) is not False:
+                                        if Globals.isBullish:
+                                            Globals.currentSignal = 'call' # Crossover = put // Hit = call
+                            elif Globals.wma20 < Globals.lastCandleClose:
+                                if (Globals.isBearish or Globals.isBullish) is not False:
+                                        if Globals.isBearish:
+                                            Globals.currentSignal = 'put' # Crossover = call // Hit = put
                         
                         Globals.isBearish = Globals.wma20 > Globals.lastCandleClose
                         Globals.isBullish = Globals.wma20 < Globals.lastCandleClose

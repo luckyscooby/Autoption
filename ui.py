@@ -16,7 +16,7 @@ class UI(QThread):
     def run(self):
         while True:
             os.system(Globals.clsstr)
-            print(colored('Autoption', 'blue', None, ['bold']) + colored(' [for IQOption]', 'white', None, ['dark']) + colored(' v' + Globals.VERSION, 'grey', None, ['dark']))
+            print(colored('Autoption', 'blue', None, ['bold']) + colored(' [for IQOption]', 'white', None, ['dark']) + colored(' v' + Globals.VERSION + ' (API v' + Globals.IQOAPI_VERSION + ')', 'grey', None, ['dark']))
             
             elapsed_time = datetime.now() - datetime.fromtimestamp(Globals.unix_start_time)
             elapsed_hours, remainder = divmod(elapsed_time.seconds, 3600)
@@ -40,7 +40,11 @@ class UI(QThread):
                                                     ['bold']) + ' (High: ' + 'R$' + "{:.2f}".format(
                     Globals.sessionBalanceHigh) + ' / Low: ' + 'R$' + "{:.2f}".format(Globals.sessionBalanceLow) + ')')
             try:
-                print('\t' + colored('R$' + "{:.2f}".format(Globals.accountBalance), 'green', None, ['bold']) + ' (' + Globals.balanceType + ') (' + "{:.2f}".format((Globals.entryAmount / Globals.accountBalance) * 100, 2) + '% Balance Risk)')
+                if Globals.accountBalance >= Globals.entryAmount:
+                    riskFactor = Globals.entryAmount / Globals.accountBalance
+                    if riskFactor == 0:
+                        riskFactor = 1
+                    print('\t' + colored('R$' + "{:.2f}".format(Globals.accountBalance), 'green', None, ['bold']) + ' (' + Globals.balanceType + ') (' + "{:.2f}".format((riskFactor) * 100, 2) + '% Balance Risk)')
             except:
                 pass
             print('\tInstrument: ' + colored('EURUSD', 'yellow'), end='')
@@ -53,8 +57,8 @@ class UI(QThread):
                     print(colored('▲ Uptrend', 'green', None, ['bold']), end='')
                 elif Globals.isBearish:
                     print(colored('▼ Downtrend', 'red', None, ['bold']), end='')
-            if (Globals.predictionPrice is not None):
-                print(' Prediction: ' + colored("{:.6f}".format(Globals.predictionPrice), 'magenta', None, ['bold']))
+            #if (Globals.predictionPrice is not None):
+            #    print(' Prediction: ' + colored("{:.6f}".format(Globals.predictionPrice), 'magenta', None, ['bold']))
             # if(Globals.yhat[0] is not None):
             # print(' (RQKernel ' + colored("{:.6f}".format(Globals.forecastK), 'magenta', None, ['dark']), end='')
             # if(Globals.forecastP is not None):
@@ -66,12 +70,11 @@ class UI(QThread):
                 print(colored('\tWaiting Reconnection...', 'red', None, ['dark']))
             else:
                 if Globals.instrumentAllowed:
-                    if Globals.ongoingTrades > 0:
-                        print('\tApprox. PnL: ' + colored('+R$' + str(Globals.realTimePnl)),
-                              'green') if Globals.realTimePnl >= 0.00 else print(
-                            '\tApprox. PnL: ' + colored('-R$' + str(abs(round(Globals.realTimePnl, 2))), 'red'))
-                    else:
-                        print(colored('\tSurfing Market...', 'cyan', None, ['bold']))
+                    #if Globals.ongoingTrade:
+                       #print('\tApprox. PnL: ' + colored('R$+' + str(Globals.orderCloseTime), 'green') if Globals.orderCloseTime >= 0 else print(
+                            #'\tApprox. PnL: ' + colored('R$' + str(Globals.orderCloseTime), 'red')))
+                    #else:
+                    print(colored('\tSurfing Market...', 'cyan', None, ['bold']))
                 else:
-                    print(colored('\tWaiting Clearance...', 'cyan', None, ['dark']))
+                    print(colored('\tWaiting clearance; Reason: ' + Globals.conditionerReason, 'cyan', None, ['dark']))
             time.sleep(Globals.NORMAL_PRIORITY_MS)

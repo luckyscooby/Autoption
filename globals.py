@@ -1,16 +1,17 @@
+import os
 from enum import Enum
 from pyqoptionapi.stable_api import IQ_Option
-from prophet import Prophet
+#from prophet import Prophet
 
 class Globals:
 
-    VERSION = '0.31.1 Alpha'
+    VERSION = '0.31 Alpha 3'
+    IQOAPI_VERSION = IQ_Option.__version__
 
     class Timeframe(Enum):
         M1 = 60
-        M5 = 300
 
-    iqoapi = IQ_Option('your@email.com', 'yourPassword')
+    iqoapi = IQ_Option(email=os.getenv(key="email"), password=os.getenv("password")) # Manually create a file ".env" containg two lines: email=youremail@email.com & password=yourPassword  
     clsstr = ''
     unix_start_time = None
     start_time = None
@@ -21,28 +22,31 @@ class Globals:
     sessionBalanceHigh = 0.00
     sessionBalanceLow = 0.00
     entryAmount = 2.00 # TODO: Implement it to programaticaly retrieve the minimum entry amount according to balanceType;
-    assertivityScore = 0.00
+    assertivityScore = 0.00 # TODO: Critical feedback;
     assertHigh = 0.00
     assertLow = 0.00
     totalLoss = 0
     totalDraw = 0
     totalWin = 0
     totalMadeEntries = 0
-    ongoingTrades = 0
-    realTimePnl = 0.00
+    ongoingTrade = False
+    #tradeData = None
+    #orderCloseTime = None
+    conditionerReason = "Initializing"
+
     timeframe = Timeframe.M1.value
 
     # WMA(20)
     wma20 = None
 
-    # Prophet
+    """ # Prophet
     yhat = [None, None]
     price = [None, None]
-    pf = Prophet()
+    #pf = Prophet()
     forecast = None
     predictionPrice = None
+    lastCandleDirection = None """
     lastCandleClose = None
-    lastCandleDirection = None
 
     isBearish = False
     isBullish = False

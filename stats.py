@@ -24,9 +24,14 @@ class Statistics(QThread):
             if Globals.assertivityScore < Globals.assertLow: Globals.assertLow = Globals.assertivityScore
             if Globals.sessionBalanceStatus > Globals.sessionBalanceHigh: Globals.sessionBalanceHigh = Globals.sessionBalanceStatus
             if Globals.sessionBalanceStatus < Globals.sessionBalanceLow: Globals.sessionBalanceLow = Globals.sessionBalanceStatus
-            if Globals.is_connected:
-                try:
-                    Globals.accountBalance = float(round(Globals.iqoapi.get_balance(), 2))
-                except:
-                    pass
+            if Globals.is_connected: self.getBalance()
+            #if Globals.ongoingTrade: Globals.orderCloseTime = round(Globals.iqoapi.get_async_order(Globals.tradeData)['position-changed']['msg']['pnl'], 2)
+
             time.sleep(Globals.LOW_PRIORITY_MS)
+
+    @staticmethod
+    def getBalance():
+        try:
+            Globals.accountBalance = float(round(Globals.iqoapi.get_balance(), 2))
+        except:
+            pass

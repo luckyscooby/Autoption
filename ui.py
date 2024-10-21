@@ -3,17 +3,12 @@ import time
 
 from datetime import datetime
 from termcolor import colored, cprint
-from PySide6.QtCore import QThread
 
 from globals import Globals
 
-class UI(QThread):
+class UI():
 
-    def __init__(self):
-        super().__init__()
-        self.setObjectName('UI Thread')
-
-    def run(self):
+    def run():
         while True:
             os.system(Globals.clsstr)
             print(colored('Autoption', 'blue', None, ['bold', 'underline']) + colored(' [for IQOption]', 'white', None, ['dark']) + colored(' v' + Globals.VERSION + ' [API v' + Globals.IQOAPI_VERSION + ']', 'grey', None, ['dark']))

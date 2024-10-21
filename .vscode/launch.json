@@ -1,13 +1,5 @@
 {
-  'version': '0.2.0',
-  'configurations': [
-    {
-      'name': 'Autoption',
-      'type': 'debugpy',
-      'request': 'launch',
-      'program': 'autoption.py',
-      'console': 'integratedTerminal',
-      'justMyCode': true
-    }
+  "configurations": [
+    {"name":"Depurador do Python: Arquivo Atual","type":"debugpy","request":"launch","program":"autoption.py","console":"integratedTerminal"}
   ]
 }

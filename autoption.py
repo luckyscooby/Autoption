@@ -8,7 +8,6 @@ import logging
 
 from datetime import datetime
 from termcolor import cprint
-from PySide6.QtCore import QThread, QDeadlineTimer
 
 from globals import Globals
 from ui import UI
@@ -45,23 +44,24 @@ Globals.start_time = datetime.now().strftime('%Y-%m-%d %I:%M:%S %p') + ' (' + ti
 
 # LAUNCH MAIN THREADS
 try:
-    uiThread = UI()
-    connectionThread = Connection()
-    conditionerThread = Conditioner()
-    analyserThread = Analyser()
-    traderThread = Trader()
-    statisticsThread = Statistics()
+    uiThread = threading.Thread(target=Connection.run, name='Connection Thread')
+    connectionThread = threading.Thread(target=UI.run, name='UI Thread')
+    conditionerThread = threading.Thread(target=Conditioner.run, name='Conditioner Thread')
+    analyserThread = threading.Thread(target=Analyser.run, name='Analyser Thread')
+    traderThread = threading.Thread(target=Trader.run, name='Trader Thread')
+    statisticsThread = threading.Thread(target=Statistics.run, name='Statistics Thread')
 
-    uiThread.start(QThread.Priority.NormalPriority)
-    connectionThread.start(QThread.Priority.TimeCriticalPriority)
-    conditionerThread.start(priority=QThread.Priority.TimeCriticalPriority)
-    analyserThread.start(priority=QThread.Priority.TimeCriticalPriority)
-    traderThread.start(priority=QThread.Priority.TimeCriticalPriority)
-    statisticsThread.start(priority=QThread.Priority.LowestPriority)
+    uiThread.start()
+    connectionThread.start()
+    conditionerThread.start()
+    analyserThread.start()
+    traderThread.start()
+    statisticsThread.start()
 
     # MainThread MUST be kept alive for iqoptionapi to work properly
     threading.current_thread().priority = 1
-    uiThread.wait(deadline=QDeadlineTimer(QDeadlineTimer.Forever))
+    #uiThread.wait(deadline=QDeadlineTimer(QDeadlineTimer.Forever))
+    #uiThread.join()
 
 except:
     cprint('Thread Error, Abort', 'red')

@@ -4,17 +4,11 @@ import time
 import websocket
 from termcolor import cprint
 
-from PySide6.QtCore import QThread
-
 from globals import Globals
 
-class Connection(QThread):
+class Connection():
 
-	def __init__(self):
-		super().__init__()
-		self.setObjectName('Connection Thread')
-
-	def run(self):
+	def run():
 		while True:
 			try:
 				Globals.is_connected = Globals.iqoapi.check_connect()

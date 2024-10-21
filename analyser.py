@@ -22,17 +22,12 @@ but no signal is generated from this (yet).
 import time
 
 from datetime import datetime
-from PySide6.QtCore import QThread
 
 from globals import Globals
 
-class Analyser(QThread):
+class Analyser():
 
-    def __init__(self):
-        super().__init__()
-        self.setObjectName('Analyser Thread')
-
-    def run(self):
+    def run():
         while True:
             if Globals.instrumentAllowed:
                 microTime = int(datetime.now().strftime('%S'))

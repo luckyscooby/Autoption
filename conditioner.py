@@ -21,17 +21,12 @@ the analyser will know and wait for the very first second of the next candle to 
 import time
 
 from datetime import datetime, timezone
-from PySide6.QtCore import QThread
 
 from globals import Globals
 
-class Conditioner(QThread):
+class Conditioner():
 
-    def __init__(self):
-        super().__init__()
-        self.setObjectName('Conditioner Thread')
-
-    def run(self):
+    def run():
         while True:
             time.sleep(Globals.HIGH_PRIORITY_MS)
 

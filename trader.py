@@ -1,16 +1,10 @@
 import time
 
-from PySide6.QtCore import QThread
-
 from globals import Globals
 
-class Trader(QThread):
+class Trader():
 
-    def __init__(self):
-        super().__init__()
-        self.setObjectName('Trader Thread')
-
-    def run(self):
+    def run():
         #TODO: Implement trading session data live backup and restore;
         while True:
             if Globals.instrumentAllowed and not 'none' in Globals.currentSignal and not Globals.ongoingTrade:

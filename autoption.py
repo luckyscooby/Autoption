@@ -1,3 +1,6 @@
+
+#TODO: Implement persistent logging for later strategy performance analysis;
+
 import os
 import time
 import threading
@@ -5,7 +8,6 @@ import logging
 
 from datetime import datetime
 from termcolor import cprint
-
 from PySide6.QtCore import QThread, QDeadlineTimer
 
 from globals import Globals
@@ -16,11 +18,7 @@ from analyser import Analyser
 from trader import Trader
 from stats import Statistics
 
-import pandas as pd
-import numpy as np
-
-threading.current_thread().setName("Autoption MainThread")
-
+threading.current_thread().setName('Autoption MainThread')
 #logging.getLogger().setLevel(level=logging.DEBUG)
 #logging.setLevel(logging.INFO)
 logging.disable(level=logging.CRITICAL)
@@ -30,12 +28,19 @@ if os.name == 'posix':
 elif os.name == 'nt':
     Globals.clsstr = 'cls'
 
+# SETUP IQOPTION ENVIRONMENT
 Connection.connect()
+Globals.iqoapi.reset_practice_balance()
+Globals.iqoapi.change_balance(Globals.balanceType)
+Globals.currency = Globals.iqoapi.get_currency()
+Globals.minimumEntryAmount = Globals.iqoapi.get_binary_option_detail()['EURUSD']['turbo']['minimal_bet']
+Globals.entryAmount = Globals.minimumEntryAmount
+
 Globals.unix_start_time = time.time()
-Globals.start_time = datetime.now().strftime("%Y-%m-%d %I:%M:%S %p") + ' (' + time.localtime().tm_zone + ')'
+Globals.start_time = datetime.now().strftime('%Y-%m-%d %I:%M:%S %p') + ' (' + time.localtime().tm_zone + ')'
 
 ###
-#Globals.ongoingTrade, Globals.tradeData = Globals.iqoapi.buy(Globals.entryAmount, "EURUSD", "put", 1)
+
 ###
 
 # LAUNCH MAIN THREADS
@@ -47,8 +52,8 @@ try:
     traderThread = Trader()
     statisticsThread = Statistics()
 
-    uiThread.start()
-    connectionThread.start()
+    uiThread.start(QThread.Priority.NormalPriority)
+    connectionThread.start(QThread.Priority.TimeCriticalPriority)
     conditionerThread.start(priority=QThread.Priority.TimeCriticalPriority)
     analyserThread.start(priority=QThread.Priority.TimeCriticalPriority)
     traderThread.start(priority=QThread.Priority.TimeCriticalPriority)

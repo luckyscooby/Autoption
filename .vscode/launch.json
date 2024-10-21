@@ -1,13 +1,13 @@
 {
-  "version": "0.2.0",
-  "configurations": [
+  'version': '0.2.0',
+  'configurations': [
     {
-      "name": "Autoption",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "autoption.py",
-      "console": "integratedTerminal",
-      "justMyCode": true
+      'name': 'Autoption',
+      'type': 'debugpy',
+      'request': 'launch',
+      'program': 'autoption.py',
+      'console': 'integratedTerminal',
+      'justMyCode': true
     }
   ]
 }

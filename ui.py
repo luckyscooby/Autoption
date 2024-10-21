@@ -1,8 +1,8 @@
 import os
 import time
+
 from datetime import datetime
 from termcolor import colored, cprint
-
 from PySide6.QtCore import QThread
 
 from globals import Globals
@@ -11,12 +11,12 @@ class UI(QThread):
 
     def __init__(self):
         super().__init__()
-        self.setObjectName("UI Thread")
+        self.setObjectName('UI Thread')
 
     def run(self):
         while True:
             os.system(Globals.clsstr)
-            print(colored('Autoption', 'blue', None, ['bold']) + colored(' [for IQOption]', 'white', None, ['dark']) + colored(' v' + Globals.VERSION + ' (API v' + Globals.IQOAPI_VERSION + ')', 'grey', None, ['dark']))
+            print(colored('Autoption', 'blue', None, ['bold', 'underline']) + colored(' [for IQOption]', 'white', None, ['dark']) + colored(' v' + Globals.VERSION + ' [API v' + Globals.IQOAPI_VERSION + ']', 'grey', None, ['dark']))
             
             elapsed_time = datetime.now() - datetime.fromtimestamp(Globals.unix_start_time)
             elapsed_hours, remainder = divmod(elapsed_time.seconds, 3600)
@@ -26,55 +26,52 @@ class UI(QThread):
             print(colored('Connected', 'green')) if Globals.is_connected else print(colored('Connection Lost', 'red'))
             print(colored(
                 '\tAssertiveness: ' + str(Globals.assertivityScore) + '% (High: ' + str(Globals.assertHigh) + '% / Low: ' + str(
-                    Globals.assertLow) + '%)', None, None, ['bold']) + ' @ M' + str(
-                Globals.timeframe.denominator)) if Globals.assertivityScore > 0 else print(
-                colored('\tAssertiveness: 0%', None, None, ['bold']) + ' @ M' + str(Globals.timeframe.denominator))
-            print('\tP: ' + colored(str(Globals.totalWin), 'green') + ' / L: ' + colored(str(Globals.totalLoss),
-                                                                                   'red') + ' / T: ' + colored(
+                    Globals.assertLow) + '%)', color='white', attrs=['bold']) + ' @ M' + str(
+                Globals.timeframe.denominator) + ':' + str(Globals.expiration)) if Globals.assertivityScore > 0 else print(
+                colored('\tUnknown Assertiveness', color='white', attrs=['bold']) + ' @ M' + str(Globals.timeframe.denominator) + ':' + str(Globals.expiration))
+            print('\tWin: ' + colored(str(Globals.totalWin), 'light_green') + ' / Loss: ' + colored(str(Globals.totalLoss),
+                                                                                   'red') + ' / Draw: ' + colored(str(Globals.totalDraw),
+                                                                                   'grey') + ' / Total Entries: ' + colored(
                 str(Globals.totalMadeEntries), 'white', None, ['dark', 'bold']))
-            print('\tConsolidated Profit: ' + colored('R$' + "{:.2f}".format(Globals.sessionBalanceStatus), 'green', None,
-                                                      ['bold']) + ' (High: ' + 'R$' + "{:.2f}".format(
-                Globals.sessionBalanceHigh) + ' / Low: ' + 'R$' + "{:.2f}".format(
-                Globals.sessionBalanceLow) + ')') if Globals.sessionBalanceStatus >= 0 else print(
-                '\tConsolidated Damage: ' + colored('R$' + "{:.2f}".format(abs(Globals.sessionBalanceStatus)), 'red', None,
-                                                    ['bold']) + ' (High: ' + 'R$' + "{:.2f}".format(
-                    Globals.sessionBalanceHigh) + ' / Low: ' + 'R$' + "{:.2f}".format(Globals.sessionBalanceLow) + ')')
+            print('\tMartingale Level: ' + Globals.martingaleLevel.__str__() + ' (Max: ' + Globals.martingaleMax.__str__() + ') / High: ' + Globals.martingaleHigh.__str__())
             try:
                 if Globals.accountBalance >= Globals.entryAmount:
                     riskFactor = Globals.entryAmount / Globals.accountBalance
                     if riskFactor == 0:
                         riskFactor = 1
-                    print('\t' + colored('R$' + "{:.2f}".format(Globals.accountBalance), 'green', None, ['bold']) + ' (' + Globals.balanceType + ') (' + "{:.2f}".format((riskFactor) * 100, 2) + '% Balance Risk)')
+                    print('\tBalance: ' + colored('$' + '{:.2f}'.format(Globals.accountBalance), 'yellow', attrs=['bold']) + ' (' + colored(Globals.balanceType, color='white', attrs=['bold']) + ') (' + colored(Globals.currency, color='yellow', attrs=['dark']) + ') (' + '{:.2f}'.format((riskFactor) * 100, 2) + '% Balance Risk) ('
+                          + colored('Entry Amount: $' + '{:.2f}'.format(Globals.entryAmount), color='yellow', attrs=['dark']) + ')')
             except:
                 pass
-            print('\tInstrument: ' + colored('EURUSD', 'yellow'), end='')
+            print('\tConsolidated Profit: ' + colored('$' + '{:.2f}'.format(Globals.sessionBalanceStatus), 'green', None,
+                                                      ['bold']) + ' (High: ' + '$' + '{:.2f}'.format(
+                Globals.sessionBalanceHigh) + ' / Low: ' + '$' + '{:.2f}'.format(
+                Globals.sessionBalanceLow) + ')') if Globals.sessionBalanceStatus >= 0 else print(
+                '\tConsolidated Damage: ' + colored('$' + '{:.2f}'.format(abs(Globals.sessionBalanceStatus)), 'red', None,
+                                                    ['bold']) + ' (High: ' + '$' + '{:.2f}'.format(
+                    Globals.sessionBalanceHigh) + ' / Low: ' + '$' + '{:.2f}'.format(Globals.sessionBalanceLow) + ')')
+            print('\tInstrument: ' + colored(Globals.instrument, 'yellow', attrs=['bold', 'dark']))
             if (Globals.lastCandleClose is not None):
-                print(' - Last Candle Close: ' + colored("{:.6f}".format(Globals.lastCandleClose), Globals.lastCandleDirection, None, ['bold']), end=' | ')
+                print('\tLast Candle Close: ' + colored('{:.6f}'.format(Globals.lastCandleClose), Globals.lastCandleDirection, None, ['bold']), end=' | ')
             if (Globals.wma20 is not None):
-                print('WMA(20): ' + colored("{:.5f}".format(Globals.wma20), 'magenta', None, ['bold']), end=' | ')
+                print('WMA(20): ' + colored('{:.5f}'.format(Globals.wma20), 'magenta', None, ['bold']), end=' | ')
             if Globals.isBearish or Globals.isBullish:
                 if Globals.isBullish:
-                    print(colored('▲ Uptrend', 'green', None, ['bold']), end='')
+                    print(colored('▲ Uptrend', 'green', None, ['bold']))
                 elif Globals.isBearish:
-                    print(colored('▼ Downtrend', 'red', None, ['bold']), end='')
-            #if (Globals.predictionPrice is not None):
-            #    print(' Prediction: ' + colored("{:.6f}".format(Globals.predictionPrice), 'magenta', None, ['bold']))
-            # if(Globals.yhat[0] is not None):
-            # print(' (RQKernel ' + colored("{:.6f}".format(Globals.forecastK), 'magenta', None, ['dark']), end='')
-            # if(Globals.forecastP is not None):
-            # print(' & Prophet ' + colored("{:.6f}".format(Globals.forecastP['yhat'][0]) , 'magenta', None, ['dark']) + ')')
-            # fig = Globals.pf.plot(Globals.forecastP)
-            # fiGlobals.show()
+                    print(colored('▼ Downtrend', 'red', None, ['bold']))
 
             if not Globals.is_connected:
-                print(colored('\tWaiting Reconnection...', 'red', None, ['dark']))
+                cprint('\tWaiting Reconnection...', 'red', None, ['dark', 'bold', 'blink'])
             else:
                 if Globals.instrumentAllowed:
-                    #if Globals.ongoingTrade:
-                       #print('\tApprox. PnL: ' + colored('R$+' + str(Globals.orderCloseTime), 'green') if Globals.orderCloseTime >= 0 else print(
-                            #'\tApprox. PnL: ' + colored('R$' + str(Globals.orderCloseTime), 'red')))
-                    #else:
-                    print(colored('\tSurfing Market...', 'cyan', None, ['bold']))
+                    if Globals.ongoingTrade:
+                        #TODO: Show details of trading data as remaining time, PnL and realtime status (win / loss / draw);
+                       #print('\tApprox. PnL: ' + colored('$+' + str(Globals.orderCloseTime), 'green') if Globals.orderCloseTime >= 0 else print(
+                            #'\tApprox. PnL: ' + colored('$' + str(Globals.orderCloseTime), 'red')))
+                        cprint('\tTrading!', 'light_yellow', attrs=['blink', 'bold'])
+                    else:
+                        cprint('\tSurfing Market...', 'cyan', attrs=['bold', 'blink'])
                 else:
-                    print(colored('\tWaiting clearance; Reason: ' + Globals.conditionerReason, 'cyan', None, ['dark']))
+                    print(colored('\tWaiting clearance; reason: ', color='red', attrs=['dark']) + colored(Globals.conditionerReason, 'red', attrs=['dark', 'bold', 'blink']))
             time.sleep(Globals.NORMAL_PRIORITY_MS)

@@ -29,7 +29,7 @@ elif os.name == 'nt':
 
 # SETUP IQOPTION ENVIRONMENT
 Connection.connect()
-#Globals.iqoapi.reset_practice_balance()
+Globals.iqoapi.reset_practice_balance()
 Globals.iqoapi.change_balance(Globals.balanceType)
 Globals.currency = Globals.iqoapi.get_currency()
 Globals.minimumEntryAmount = Globals.iqoapi.get_binary_option_detail()['EURUSD']['turbo']['minimal_bet']

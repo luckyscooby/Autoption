@@ -18,9 +18,9 @@ from trader import Trader
 from stats import Statistics
 
 threading.current_thread().setName('Autoption MainThread')
-#logging.getLogger().setLevel(level=logging.DEBUG)
+logging.getLogger().setLevel(level=logging.DEBUG)
 #logging.setLevel(logging.INFO)
-logging.disable(level=logging.CRITICAL)
+#logging.disable(level=logging.CRITICAL)
 
 if os.name == 'posix':
     Globals.clsstr = 'clear'

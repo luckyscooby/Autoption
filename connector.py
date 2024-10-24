@@ -27,11 +27,6 @@ class Connection():
 				Globals.iqoapi.connect()
 				cprint('OK', 'light_green')
 				Globals.is_connected = True
-				b = 2000
-				while b <= 10000:
-					if os.name == 'posix':
-						os.system('beep -f ' + str(b) + ' -l 100')
-					b += 2000
 			except (json.JSONDecodeError, websocket.WebSocketException, AttributeError) as e:
 				cprint('Connection Error, Retry', 'light_red')
 				time.sleep(Globals.NORMAL_PRIORITY_MS)

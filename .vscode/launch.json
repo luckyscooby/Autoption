@@ -1,5 +1,5 @@
 {
   "configurations": [
-    {"name":"Depurador do Python: Arquivo Atual","type":"debugpy","request":"launch","program":"autoption.py","console":"integratedTerminal"}
+    {"name":"Autoption","type":"debugpy","request":"launch","program":"autoption.py","console":"integratedTerminal"}
   ]
 }

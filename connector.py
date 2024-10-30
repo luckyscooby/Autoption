@@ -10,13 +10,14 @@ class Connection():
 
 	def run():
 		while True:
+			time.sleep(Globals.NORMAL_PRIORITY_MS)
+
 			try:
 				Globals.is_connected = Globals.iqoapi.check_connect()
 				if not Globals.is_connected:
 					Globals.iqoapi.connect()
 			except:
 				Globals.is_connected = False
-			time.sleep(Globals.NORMAL_PRIORITY_MS)
     
 	@staticmethod
 	def connect():

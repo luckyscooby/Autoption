@@ -5,7 +5,7 @@ from pyqoptionapi.stable_api import IQ_Option
 
 class Globals:
 
-    VERSION = '0.50 (Alpha 5)'
+    VERSION = '0.51 (Alpha 5)'
     IQOAPI_VERSION = IQ_Option.__version__
 
     class Timeframe(Enum):
@@ -30,8 +30,8 @@ class Globals:
     sessionBalanceStatus = 0.00
     sessionBalanceHigh = 0.00
     sessionBalanceLow = 0.00
-    minimumEntryAmount = 0.00
-    entryAmount = 0.00 # TODO: Implement it to programaticaly retrieve the minimum entry amount according to balanceType; ✅
+    minimumEntryAmount = 0.00 # Programaticaly retrieved
+    entryAmount = 0.00
     assertivityScore = 0.0
     assertHigh = 0.0
     assertLow = 0.0

@@ -29,55 +29,50 @@ class Analyser():
 
     def run():
         while True:
-            if Globals.instrumentAllowed:
-                microTime = int(datetime.now().strftime('%S'))
-                if microTime == 0:
-                    try:
-                        period = 20
-                        instrumentCandles = Globals.iqoapi.get_candles(Globals.instrument, Globals.timeframe, period + 1, time.time())
-                        if instrumentCandles[period]['close'] > instrumentCandles[period]['open']:
-                            Globals.lastCandleDirection = 'green'
-                        elif instrumentCandles[period]['close'] < instrumentCandles[period]['open']:
-                            Globals.lastCandleDirection = 'red'
-                        else:
-                            Globals.lastCandleDirection = 'grey'
-                        Globals.lastCandleClose = instrumentCandles[period]['close']
-
-                        # Calculate WMA(20)
-                        # Formula based on IQOption's own MathML: https://quadcode-tech.github.io/quadcodescript-docs/api/averages/wma.html
-                        series = []
-                        i = 0
-                        while i < (period):
-                            series.append(instrumentCandles[i]['close'])
-                            i += 1
-                        wma_sum_numerator = 0
-                        wma_sum_denominator = 0
-                        for i in range(0, period - 1):
-                            wma_sum_numerator += (period - 1 - i) * series[period - 1 - i]
-                            wma_sum_denominator += (period - 1 - i)
-                        Globals.wma20 = wma_sum_numerator / wma_sum_denominator
-
-                        # Trend & Crossover Signal
-                        #TODO: Implement signal confirmation using the next candle to avoid false crossovers;
-                        if not Globals.ongoingTrade:
-                            if Globals.wma20 > Globals.lastCandleClose:
-                                if (Globals.isBearish or Globals.isBullish) is not False:
-                                        if Globals.isBullish:
-                                            Globals.currentSignal = 'put' # Crossover = put // Hit = call
-                            elif Globals.wma20 < Globals.lastCandleClose:
-                                if (Globals.isBearish or Globals.isBullish) is not False:
-                                        if Globals.isBearish:
-                                            Globals.currentSignal = 'call' # Crossover = call // Hit = put
-                        
-                        Globals.isBearish = Globals.wma20 > Globals.lastCandleClose
-                        Globals.isBullish = Globals.wma20 < Globals.lastCandleClose
-                        
-                        continue
-
-                        time.sleep(Globals.timeframe - 30)
-                        continue  # In order to be timeframe agnostic we must cycle each analysis according to given seconds per bar.
-
-                    except:
-                        pass
-
             time.sleep(Globals.HIGH_PRIORITY_MS)
+
+            microTime = int(datetime.now().strftime('%S'))
+            if microTime == 0:
+                try:
+                    period = 20
+                    instrumentCandles = Globals.iqoapi.get_candles(Globals.instrument, Globals.timeframe, period + 1, time.time())
+                    if instrumentCandles[period]['close'] > instrumentCandles[period]['open']:
+                        Globals.lastCandleDirection = 'green'
+                    elif instrumentCandles[period]['close'] < instrumentCandles[period]['open']:
+                        Globals.lastCandleDirection = 'red'
+                    else:
+                        Globals.lastCandleDirection = 'grey'
+                    Globals.lastCandleClose = instrumentCandles[period]['close']
+
+                    # Calculate WMA(20)
+                    # Formula based on IQOption's own MathML: https://quadcode-tech.github.io/quadcodescript-docs/api/averages/wma.html
+                    series = []
+                    i = 0
+                    while i < (period):
+                        series.append(instrumentCandles[i]['close'])
+                        i += 1
+                    wma_sum_numerator = 0
+                    wma_sum_denominator = 0
+                    for i in range(0, period - 1):
+                        wma_sum_numerator += (period - 1 - i) * series[period - 1 - i]
+                        wma_sum_denominator += (period - 1 - i)
+                    Globals.wma20 = wma_sum_numerator / wma_sum_denominator
+
+                    # Trend & Crossover Signal
+                    #TODO: Implement signal confirmation using the next candle to avoid false crossovers; ⏳
+                    if not Globals.ongoingTrade and Globals.instrumentAllowed:
+                        if Globals.wma20 > Globals.lastCandleClose:
+                            if (Globals.isBearish or Globals.isBullish) is not False:
+                                    if Globals.isBullish:
+                                        Globals.currentSignal = 'put' # Crossover = put // Hit = call
+                        elif Globals.wma20 < Globals.lastCandleClose:
+                            if (Globals.isBearish or Globals.isBullish) is not False:
+                                    if Globals.isBearish:
+                                        Globals.currentSignal = 'call' # Crossover = call // Hit = put
+                    
+                    Globals.isBearish = Globals.wma20 > Globals.lastCandleClose
+                    Globals.isBullish = Globals.wma20 < Globals.lastCandleClose
+                    
+                    continue
+                except:
+                    pass

@@ -32,8 +32,9 @@ Connection.connect()
 Globals.iqoapi.reset_practice_balance()
 Globals.iqoapi.change_balance(Globals.balanceType)
 Globals.currency = Globals.iqoapi.get_currency()
-Globals.minimumEntryAmount = Globals.iqoapi.get_binary_option_detail()['EURUSD']['turbo']['minimal_bet']
+Globals.minimumEntryAmount = Globals.iqoapi.get_binary_option_detail()[Globals.instrument]['turbo']['minimal_bet']
 Globals.entryAmount = Globals.minimumEntryAmount
+Statistics.getBalance()
 
 Globals.unix_start_time = time.time()
 Globals.start_time = datetime.now().strftime('%Y-%m-%d %I:%M:%S %p') + ' (' + time.localtime().tm_zone + ')'
@@ -51,17 +52,16 @@ try:
     traderThread = threading.Thread(target=Trader.run, name='Trader Thread')
     statisticsThread = threading.Thread(target=Statistics.run, name='Statistics Thread')
 
-    uiThread.start()
     connectionThread.start()
     conditionerThread.start()
     analyserThread.start()
     traderThread.start()
     statisticsThread.start()
+    uiThread.start()
 
     # MainThread MUST be kept alive for iqoptionapi to work properly
     threading.current_thread().priority = 1
-    #uiThread.wait(deadline=QDeadlineTimer(QDeadlineTimer.Forever))
-    #uiThread.join()
+    uiThread.join()
 
 except:
     cprint('Thread Error, Abort', 'red')

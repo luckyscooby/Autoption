@@ -30,8 +30,8 @@ class UI():
             print(colored(
                 '\tAssertiveness: ' + str(Globals.assertivityScore) + '% (High: ' + str(Globals.assertHigh) + '% / Low: ' + str(
                     Globals.assertLow) + '%)', color='white', attrs=['bold']) + ' @ M' + str(
-                Globals.timeframe.denominator) + ':' + str(Globals.expiration)) if Globals.assertivityScore > 0 else print(
-                colored('\tUnknown Assertiveness', color='white', attrs=['bold']) + ' @ M' + str(Globals.timeframe.denominator) + ':' + str(Globals.expiration))
+                Globals.timeframe.denominator) + ':T' + str(Globals.expiration)) if Globals.assertivityScore > 0 else print(
+                colored('\tUnknown Assertiveness', color='white', attrs=['bold']) + ' @ M' + str(Globals.timeframe.denominator) + ':T' + str(Globals.expiration))
             print('\tWin: ' + colored(str(Globals.totalWin), 'light_green') + ' / Loss: ' + colored(str(Globals.totalLoss),
                                                                                    'red') + ' / Draw: ' + colored(str(Globals.totalDraw),
                                                                                    'grey') + ' / Total Entries: ' + colored(

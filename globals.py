@@ -5,7 +5,7 @@ from pyqoptionapi.stable_api import IQ_Option
 
 class Globals:
 
-    VERSION = '0.51 (Alpha 5)'
+    VERSION = '0.52 (Alpha 5)'
     IQOAPI_VERSION = IQ_Option.__version__
 
     class Timeframe(Enum):

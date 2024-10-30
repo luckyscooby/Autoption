@@ -48,7 +48,7 @@ class Conditioner():
                 # For EURUSD this is where the London session (EUR) and the New York session (USD) overlap, between 12pm and 4pm.
                 # Reference: https://www.babypips.com/tools/forex-market-hours
                 sessionTime = int(datetime.now(tz=timezone.utc).strftime('%H'))
-                if not (sessionTime >= 12) and (sessionTime < 17):
+                if not ((sessionTime >= 12) and (sessionTime < 17)):
                     Globals.instrumentAllowed = False
                     Globals.conditionerReason = 'out of session'
                     continue

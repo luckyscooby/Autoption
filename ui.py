@@ -72,7 +72,7 @@ class UI():
             if not Globals.is_connected:
                 cprint('\tWaiting Reconnection...', 'red', attrs=['dark', 'bold', 'blink'])
             else:
-                if Globals.instrumentAllowed:
+                if Globals.instrumentAllowed and (not Globals.isOnStopLoss):
                     if Globals.ongoingTrade:
                         #TODO: Show details of trading data as remaining time, PnL and realtime status (win / loss / draw);
                        #print('\tApprox. PnL: ' + colored('$+' + str(Globals.orderCloseTime), 'green') if Globals.orderCloseTime >= 0 else print(

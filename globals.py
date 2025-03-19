@@ -5,7 +5,7 @@ from pyqoptionapi.stable_api import IQ_Option
 
 class Globals:
 
-    VERSION = '0.6.0'
+    VERSION = '0.6.1'
     IQOAPI_VERSION = IQ_Option.__version__
 
     class Timeframe(Enum):
@@ -17,11 +17,11 @@ class Globals:
     start_time = None
     is_connected = False
     balanceType = 'PRACTICE' # 'PRACTICE' or 'REAL'
-    instrument = 'EURUSD'
+    instrument = 'EURUSD-op'
     timeframe = Timeframe.M1.value
     expiration = 5 # Minutes
     USE_STOP_LOSS = True
-    INITIAL_LOSS_COOLDOWN = 10 # Minutes
+    INITIAL_LOSS_COOLDOWN = 3 # Minutes
     stopLossCooldown = INITIAL_LOSS_COOLDOWN
     STOP_LOSS_APLIFIER_FACTOR = 2
     isOnStopLoss = False

@@ -50,9 +50,10 @@ class Trader():
                             Globals.isOnStopLoss = True
                             Globals.stopLossCounter = Globals.stopLossCooldown
                             while Globals.stopLossCounter > 0:
-                                Globals.stopLossCounter -= 1
                                 time.sleep(60)
+                                Globals.stopLossCounter -= 1
                             Globals.stopLossCooldown *= Globals.STOP_LOSS_APLIFIER_FACTOR
+                            Globals.isOnStopLoss = False
 
                     elif tradeResult[0] == 'equal':
                         Globals.totalDraw += 1

@@ -36,7 +36,10 @@ class UI():
                                                                                    'red') + ' / Draw: ' + colored(str(Globals.totalDraw),
                                                                                    'grey') + ' / Total Entries: ' + colored(
                 str(Globals.totalMadeEntries), 'white', attrs=['dark', 'bold']))
-            print('\tMartingale Level: ' + Globals.martingaleLevel.__str__() + ' (Max: ' + Globals.martingaleMax.__str__() + ') / High: ' + Globals.martingaleHigh.__str__())
+            if Globals.USE_STOP_LOSS:
+                print('\tOn StopLoss: ' + Globals.isOnStopLoss.__str__() + ' (Cooldown: ' + Globals.stopLossCounter.__str__() + '/' + Globals.stopLossCooldown.__str__() + ' Minute(s))')
+            if Globals.USE_MARTINGALE:
+                print('\tMartingale Level: ' + Globals.martingaleLevel.__str__() + ' (Max: ' + Globals.MAX_MARTINGALE.__str__() + ') / High: ' + Globals.martingaleHigh.__str__())
             
             ### BALANCE
             try:
@@ -44,8 +47,7 @@ class UI():
                     riskFactor = Globals.entryAmount / Globals.accountBalance
                     if riskFactor == 0:
                         riskFactor = 1
-                    print('\tBalance: ' + colored('$' + '{:.2f}'.format(Globals.accountBalance), 'yellow', attrs=['bold']) + ' (' + colored(Globals.balanceType, color='white', attrs=['bold']) + ') (' + colored(Globals.currency, color='yellow', attrs=['dark']) + ') (' + '{:.2f}'.format((riskFactor) * 100, 2) + '% Balance Risk) ('
-                          + colored('Entry Amount: $' + '{:.2f}'.format(Globals.entryAmount), color='yellow', attrs=['dark']) + ')')
+                print('\tBalance: ' + colored('$' + '{:.2f}'.format(Globals.accountBalance), 'yellow', attrs=['bold']) + ' (' + colored(Globals.balanceType, color='white', attrs=['bold']) + ') (' + colored(Globals.currency, color='yellow', attrs=['dark']) + ') (' + '{:.2f}'.format((riskFactor) * 100, 2) + '% Balance Risk) (' + colored('Entry Amount: $' + '{:.2f}'.format(Globals.entryAmount), color='yellow', attrs=['dark']) + ')')
             except:
                 pass
             print('\tConsolidated Profit: ' + colored('$' + '{:.2f}'.format(Globals.sessionBalanceStatus), 'green', attrs=['bold']) + ' (High: ' + '$' + '{:.2f}'.format(

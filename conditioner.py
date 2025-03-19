@@ -41,6 +41,10 @@ class Conditioner():
                 Globals.conditionerReason = 'out of balance'
                 continue
 
+            if Globals.isOnStopLoss:
+                Globals.conditionerReason = 'on stop loss'
+                continue
+
             microTime = int(datetime.now().strftime('%S'))
             if microTime == 30:
                 # Check if instrument is in proper time for trading, based on London (GMT 0) timezone;

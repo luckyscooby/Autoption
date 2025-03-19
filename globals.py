@@ -5,7 +5,7 @@ from pyqoptionapi.stable_api import IQ_Option
 
 class Globals:
 
-    VERSION = '0.52 (Alpha 5)'
+    VERSION = '0.6.0'
     IQOAPI_VERSION = IQ_Option.__version__
 
     class Timeframe(Enum):
@@ -20,10 +20,15 @@ class Globals:
     instrument = 'EURUSD'
     timeframe = Timeframe.M1.value
     expiration = 5 # Minutes
-    useLossCooldown = False
-    useMartingale = True
+    USE_STOP_LOSS = True
+    INITIAL_LOSS_COOLDOWN = 10 # Minutes
+    stopLossCooldown = INITIAL_LOSS_COOLDOWN
+    STOP_LOSS_APLIFIER_FACTOR = 2
+    isOnStopLoss = False
+    stopLossCounter = 0
+    USE_MARTINGALE = True
     martingaleLevel = 0
-    martingaleMax = 5
+    MAX_MARTINGALE = 5
     martingaleHigh = 0
     currency = ''
     accountBalance = 0.00
